@@ -1,0 +1,43 @@
+#The code has been implemented in Google Colab
+
+import matplotlib.pyplot as plt                                        #importing all the libraries required
+import seaborn as sns
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import r2_score
+
+from google.colab import files                                         #To import the dataset files in Google colab(only spam.csv here)
+uploaded=files.upload()
+df = pd.read_csv("CarPrice_Dataset_GDSC_article.csv")                  #Reading the dataset CarPrice_Dataset_article.csv
+df.head()
+
+numerical_feature = [feature for feature in df.columns if df[feature].dtypes!="O"]
+numerical_feature
+for feature in numerical_feature:
+   sns.scatterplot(x = df[feature], y = df['price'])
+   plt.show()
+
+df = df.drop(['CarName', 'fueltype', 'aspiration', 'carbody', 'drivewheel', 'enginelocation', 'enginetype', 'fuelsystem', 'doornumber', 'cylindernumber'], axis=1)
+df = df.drop(['peakrpm', 'compressionratio', 'peakrpm', 'stroke', 'carheight', 'wheelbase'], axis=1)
+df['enginesize'] = np.log(df['enginesize'])
+scaler=MinMaxScaler()
+scaler.fit(df)
+dataset=pd.DataFrame(scaler.transform(df),columns=df.columns)
+dataset.head()
+
+df['enginesize'] = np.log(df['enginesize'])
+scaler=MinMaxScaler()
+scaler.fit(df)
+dataset=pd.DataFrame(scaler.transform(df),columns=df.columns)
+dataset.head()
+X=df.drop(['price'], axis=1)
+y=df['price']
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.1,random_state=42)
+lr=LinearRegression()
+lr.fit(X_train,y_train)
+y_predLR = lr.predict(X_test)
+r2_score(y_test, y_predLR)
+
